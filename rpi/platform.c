@@ -1,6 +1,6 @@
 #include <bcm2835.h>
 #include <stdio.h>
-#include <time.h>
+#include <unistd.h>
 
 void print(char *str)
 {
@@ -22,7 +22,7 @@ void print_buf(uint8_t *buf, uint8_t n)
 
 void delay_ms(int ms)
 {
-    nanosleep((struct timespec[]){{0, ms * 1000000}}, NULL);
+    usleep(ms * 1000);
 }
 
 void enable_spi()
