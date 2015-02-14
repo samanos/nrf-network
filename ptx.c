@@ -45,10 +45,14 @@ int main(int argc, char **argv)
 
     tx_payload();
     while (!rx_data_ready()) {
+        uint8_t status = bcm2835_spi_transfer((uint8_t) 0xFF);
+        printf("Status %02X\n", status);
         if (max_retransmits_reached()) {
+            printf("Cleaning max rt flag\n");
             clean_max_rt_int();
             tx_payload();
         }
+        sleep(0);
     }
 
     printf("Data ready, reading...");
