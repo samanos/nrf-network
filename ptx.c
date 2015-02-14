@@ -14,14 +14,14 @@ uint8_t max_retransmits_reached()
 {
     uint8_t status = bcm2835_spi_transfer((uint8_t)0xFF);
     // MAX_RT is bit 4 in status register
-    status >> 4 & 1;
+    return (status >> 3) & 1;
 }
 
 uint8_t rx_data_ready()
 {
     uint8_t status = bcm2835_spi_transfer((uint8_t)0xFF);
     // RX_DR is bit 6 in status register
-    status >> 6 & 1;
+    return (status >> 5) & 1;
 }
 
 uint8_t get_rx_data(char *rx_data)
@@ -60,13 +60,13 @@ int main(int argc, char **argv)
 
         if (rx_data_ready()) {
             printf("Data ready, reading...");
-             char buf[32];
-             uint8_t length = get_rx_data(buf);
+            char buf[32];
+            uint8_t length = get_rx_data(buf);
 
-             int i;
-             for (i = 0; i < length; i++) {
-               printf("%s", buf[i]);
-             }
+            int i;
+            for (i = 0; i < length; i++) {
+                printf("%s", buf[i]);
+            }
         }
 
         sleep(1);
