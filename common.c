@@ -153,6 +153,16 @@ void flush_rx()
     uint8_t status = bcm2835_spi_transfer((uint8_t) 0b11100010);
 }
 
+void clean_rx_dr_int()
+{
+    uint8_t status = bcm2835_spi_transfer((uint8_t) 0xFF);
+    status |= 1 << 6;
+
+    // write to STATUS register
+    char buf[2] = { 0b00100111, status };
+    bcm2835_spi_transfern(buf, 2);
+}
+
 void clean_int_flags()
 {
     // STATUS register

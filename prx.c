@@ -27,7 +27,7 @@ int main(int argc, char **argv)
 
         sleep(1);
 
-        if (rx_data_ready()) {
+        while (rx_data_ready()) {
             printf("Data ready, reading...");
             char buf[32];
             uint8_t length = get_rx_data(buf);
@@ -37,6 +37,7 @@ int main(int argc, char **argv)
                 printf("%c", buf[i]);
             }
             printf("\n");
+            clean_rx_dr_int();
         }
     }
 
