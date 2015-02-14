@@ -65,7 +65,7 @@ int main(int argc, char **argv)
 
             int i;
             for (i = 0; i < length; i++) {
-                printf("%s", buf[i]);
+                printf("%c", buf[i]);
             }
         }
 
