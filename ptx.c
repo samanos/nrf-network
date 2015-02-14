@@ -17,6 +17,13 @@ uint8_t max_retransmits_reached()
     return (status >> 4) & 1;
 }
 
+uint8_t tx_data_sent()
+{
+    uint8_t status = bcm2835_spi_transfer((uint8_t) 0xFF);
+    // TX_DS is bit 5 in status register
+    return (status >> 5) & 1;
+}
+
 void clean_max_rt_int()
 {
     uint8_t status = bcm2835_spi_transfer((uint8_t) 0xFF);
@@ -44,30 +51,26 @@ int main(int argc, char **argv)
     receiver_addr();
 
     tx_payload();
-    while (!rx_data_ready()) {
+    while (!tx_data_sent()) {}
+
+    if (!rx_data_ready()) {
+        printf("Empty ack this time!\n");
+    }
+    else {
+        printf("Data ready, reading...");
+
         uint8_t status = bcm2835_spi_transfer((uint8_t) 0xFF);
         printf("Status %02X\n", status);
-        if (max_retransmits_reached()) {
-            printf("Cleaning max rt flag\n");
-            clean_max_rt_int();
-            tx_payload();
+
+        char buf[32];
+        uint8_t length = get_rx_data(buf);
+
+        int i;
+        for (i = 1; i <= length; i++) {
+            printf("%c", buf[i]);
         }
-        sleep(0);
+        printf("\n");
     }
-
-    printf("Data ready, reading...");
-
-    uint8_t status = bcm2835_spi_transfer((uint8_t) 0xFF);
-    printf("Status %02X\n", status);
-
-    char buf[32];
-    uint8_t length = get_rx_data(buf);
-
-    int i;
-    for (i = 1; i <= length; i++) {
-        printf("%c", buf[i]);
-    }
-    printf("\n");
 
     clean_up();
     power_down();
