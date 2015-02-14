@@ -51,9 +51,12 @@ int main(int argc, char **argv)
     receiver_addr();
 
     tx_payload();
-    while (!tx_data_sent()) {}
+    while (!tx_data_sent() && !max_retransmits_reached()) {}
 
-    if (!rx_data_ready()) {
+    if (max_retransmits_reached()) {
+        printf("Unable to send data.\n");
+    }
+    else if (!rx_data_ready()) {
         printf("Empty ack this time!\n");
     }
     else {
