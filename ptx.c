@@ -14,7 +14,7 @@ uint8_t max_retransmits_reached()
 {
     uint8_t status = bcm2835_spi_transfer((uint8_t)0xFF);
     // MAX_RT is bit 4 in status register
-    return (status >> 3) & 1;
+    return (status >> 4) & 1;
 }
 
 int main(int argc, char **argv)

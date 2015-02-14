@@ -123,7 +123,7 @@ uint8_t rx_data_ready()
 {
     uint8_t status = bcm2835_spi_transfer((uint8_t)0xFF);
     // RX_DR is bit 6 in status register
-    return (status >> 5) & 1;
+    return (status >> 6) & 1;
 }
 
 uint8_t get_rx_data(char *rx_data)
