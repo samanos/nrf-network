@@ -34,7 +34,7 @@ uint8_t get_rx_data(char *rx_data)
 
     // R_RX_PAYLOAD command
     rx_data[0] = 0b01100001;
-    bcm2835_spi_transfern(rx_data, length);
+    bcm2835_spi_transfern(rx_data, length + 1); // one for status byte
 
     return length;
 }
@@ -64,7 +64,7 @@ int main(int argc, char **argv)
             uint8_t length = get_rx_data(buf);
 
             int i;
-            for (i = 0; i < length; i++) {
+            for (i = 1; i <= length; i++) {
                 printf("%c", buf[i]);
             }
         }
