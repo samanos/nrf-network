@@ -16,10 +16,8 @@ int main(int argc, char **argv)
     ce_high();
     power_up();
 
-    clean_up();
-
     while(1) {
-        flush_tx();
+        clean_up();
 
         printf("Setting auto ack.\n");
         // Set autoack payload for data pipe 0
@@ -38,6 +36,7 @@ int main(int argc, char **argv)
             for (i = 1; i <= length; i++) {
                 printf("%c", buf[i]);
             }
+            printf("\n");
         }
     }
 

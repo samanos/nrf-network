@@ -44,6 +44,7 @@ int main(int argc, char **argv)
     for (i = 1; i <= length; i++) {
         printf("%c", buf[i]);
     }
+    printf("\n");
 
     clean_up();
     power_down();
