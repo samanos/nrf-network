@@ -37,6 +37,10 @@ int main(int argc, char **argv)
     while (!rx_data_ready()) { }
 
     printf("Data ready, reading...");
+
+    uint8_t status = bcm2835_spi_transfer((uint8_t) 0xFF);
+    printf("Status %02X\n", status);
+
     char buf[32];
     uint8_t length = get_rx_data(buf);
 
