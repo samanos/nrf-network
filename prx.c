@@ -3,12 +3,6 @@
 
 #include "common.h"
 
-void flush_tx()
-{
-    // FLUSH_TX command
-    uint8_t status = bcm2835_spi_transfer((uint8_t) 0b11100001);
-}
-
 int main(int argc, char **argv)
 {
     if (!bcm2835_init())
@@ -22,17 +16,29 @@ int main(int argc, char **argv)
     ce_high();
     power_up();
 
+    clean_up();
+
     while(1) {
         flush_tx();
 
-        printf("Setting auto ack.");
-
+        printf("Setting auto ack.\n");
         // Set autoack payload for data pipe 0
         char buf[6];
         buf[0] = 0b10101000; buf[1] = 'o'; buf[2] = 'h'; buf[3] = 'i'; buf[4] = '!';
         bcm2835_spi_transfern(buf, 5);
 
         sleep(1);
+
+        if (rx_data_ready()) {
+            printf("Data ready, reading...");
+            char buf[32];
+            uint8_t length = get_rx_data(buf);
+
+            int i;
+            for (i = 1; i <= length; i++) {
+                printf("%c", buf[i]);
+            }
+        }
     }
 
     /*// read register

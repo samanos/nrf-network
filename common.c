@@ -104,6 +104,66 @@ void power_up()
     bcm2835_spi_transfern(buf, 2);
 
     buf[0] = 0b00100000; // write to CONFIG
-    buf[1] |= 1 << 1; // POWER UP
+    buf[1] |= 1 << 1; // PWR_UP = 1
     bcm2835_spi_transfern(buf, 2);
+}
+
+void power_down()
+{
+    // read CONFIG register
+    char buf[2] = { 0, 0 };
+    bcm2835_spi_transfern(buf, 2);
+
+    buf[0] = 0b00100000; // write to CONFIG
+    buf[1] |= 0 << 1; // PWR_UP = 0
+    bcm2835_spi_transfern(buf, 2);
+}
+
+uint8_t rx_data_ready()
+{
+    uint8_t status = bcm2835_spi_transfer((uint8_t)0xFF);
+    // RX_DR is bit 6 in status register
+    return (status >> 5) & 1;
+}
+
+uint8_t get_rx_data(char *rx_data)
+{
+    // R_RX_PL_WID command
+    char buf[32] = { 0b01100000, 0 };
+    bcm2835_spi_transfern(buf, 2);
+
+    uint8_t length = buf[1];
+
+    // R_RX_PAYLOAD command
+    rx_data[0] = 0b01100001;
+    bcm2835_spi_transfern(rx_data, length + 1); // one for status byte
+
+    return length;
+}
+
+void flush_tx()
+{
+    // FLUSH_TX command
+    uint8_t status = bcm2835_spi_transfer((uint8_t) 0b11100001);
+}
+
+void flush_rx()
+{
+    // FLUSH_RX command
+    uint8_t status = bcm2835_spi_transfer((uint8_t) 0b11100010);
+}
+
+void clean_int_flags()
+{
+    // STATUS register
+    // RX_DR bit6, TX_DS bit5, MAX_RT bit4
+    char buf[2] = { 0b00100000, 0b01110000 };
+    bcm2835_spi_transfern(buf, 2);
+}
+
+void clean_up()
+{
+    flush_tx();
+    flush_rx();
+    clean_int_flags();
 }

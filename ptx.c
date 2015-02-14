@@ -17,28 +17,6 @@ uint8_t max_retransmits_reached()
     return (status >> 3) & 1;
 }
 
-uint8_t rx_data_ready()
-{
-    uint8_t status = bcm2835_spi_transfer((uint8_t)0xFF);
-    // RX_DR is bit 6 in status register
-    return (status >> 5) & 1;
-}
-
-uint8_t get_rx_data(char *rx_data)
-{
-    // R_RX_PL_WID command
-    char buf[32] = { 0b01100000, 0 };
-    bcm2835_spi_transfern(buf, 2);
-
-    uint8_t length = buf[1];
-
-    // R_RX_PAYLOAD command
-    rx_data[0] = 0b01100001;
-    bcm2835_spi_transfern(rx_data, length + 1); // one for status byte
-
-    return length;
-}
-
 int main(int argc, char **argv)
 {
     if (!bcm2835_init())
@@ -51,27 +29,25 @@ int main(int argc, char **argv)
     ce_high();
     power_up();
 
+    clean_up();
+
     receiver_addr();
 
     tx_payload();
-    while (1) {
-        uint8_t status = bcm2835_spi_transfer((uint8_t)0xFF);
-        printf("Status %02X\n", status);
+    while (!rx_data_ready()) { }
 
-        if (rx_data_ready()) {
-            printf("Data ready, reading...");
-            char buf[32];
-            uint8_t length = get_rx_data(buf);
+    printf("Data ready, reading...");
+    char buf[32];
+    uint8_t length = get_rx_data(buf);
 
-            int i;
-            for (i = 1; i <= length; i++) {
-                printf("%c", buf[i]);
-            }
-        }
-
-        sleep(1);
+    int i;
+    for (i = 1; i <= length; i++) {
+        printf("%c", buf[i]);
     }
 
+    clean_up();
+    power_down();
     disable_spi();
+
     return 0;
 }
