@@ -122,8 +122,8 @@ void power_down()
 uint8_t rx_data_ready()
 {
     uint8_t status = bcm2835_spi_transfer((uint8_t)0xFF);
-    // RX_DR is bit 6 in status register
-    return (status >> 6) & 1;
+    // RX_P_NO is bits 3:1 in status register
+    return ((status >> 1) & 0b00000111) != 0b00000111;
 }
 
 uint8_t get_rx_data(char *rx_data)
