@@ -157,7 +157,7 @@ void clean_int_flags()
 {
     // STATUS register
     // RX_DR bit6, TX_DS bit5, MAX_RT bit4
-    char buf[2] = { 0b00100000, 0b01110000 };
+    char buf[2] = { 0b00100111, 0b01110000 };
     bcm2835_spi_transfern(buf, 2);
 }
 
