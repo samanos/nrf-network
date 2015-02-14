@@ -115,7 +115,7 @@ void power_down()
     bcm2835_spi_transfern(buf, 2);
 
     buf[0] = 0b00100000; // write to CONFIG
-    buf[1] |= 0 << 1; // PWR_UP = 0
+    buf[1] &= ~(0 << 1); // PWR_UP = 0
     bcm2835_spi_transfern(buf, 2);
 }
 

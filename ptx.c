@@ -12,9 +12,19 @@ void tx_payload()
 
 uint8_t max_retransmits_reached()
 {
-    uint8_t status = bcm2835_spi_transfer((uint8_t)0xFF);
+    uint8_t status = bcm2835_spi_transfer((uint8_t) 0xFF);
     // MAX_RT is bit 4 in status register
     return (status >> 4) & 1;
+}
+
+void clean_max_rt_int()
+{
+    uint8_t status = bcm2835_spi_transfer((uint8_t) 0xFF);
+    status |= 1 << 4;
+
+    // write to STATUS register
+    char buf[2] = { 0b00100111, status };
+    bcm2835_spi_transfern(buf, 2);
 }
 
 int main(int argc, char **argv)
@@ -34,7 +44,12 @@ int main(int argc, char **argv)
     receiver_addr();
 
     tx_payload();
-    while (!rx_data_ready()) { }
+    while (!rx_data_ready()) {
+        if (max_retransmits_reached()) {
+            clean_max_rt_int();
+            tx_payload();
+        }
+    }
 
     printf("Data ready, reading...");
 
