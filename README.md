@@ -1,4 +1,4 @@
-## Samana network components
+## SamanOS wireless network components
 
 This repository contains transmitters and receivers implemented using [nRF24L01+](https://www.nordicsemi.com/eng/Products/2.4GHz-RF/nRF24L01P) wireless chip.
 
