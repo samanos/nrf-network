@@ -15,9 +15,9 @@ void println(char *str)
 void print_buf(uint8_t *buf, uint8_t n)
 {
     for (uint8_t i = 0; i < n; i++) {
-        printf("%c", buf[i]);
+        printf("%02X", buf[i]);
     }
-    print("\n");
+    println("");
 }
 
 void delay_ms(int ms)

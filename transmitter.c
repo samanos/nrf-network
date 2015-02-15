@@ -4,8 +4,8 @@
 void tx_payload()
 {
     // W_TX_PAYLOAD command
-    uint8_t buf[11] = { 0b10100000, 'h', 'e', 'l', 'l', 'o', 'w', 'o', 'r', 'l', 'd' };
-    spi_transfern(buf, 11);
+    uint8_t buf[9] = { 0b10100000, 0xF0, 0x1D, 0xAB, 0x1E, 0x5C, 0xA1, 0xAB, 0x1E };
+    spi_transfern(buf, 9);
 }
 
 uint8_t max_retransmits_reached()
@@ -55,7 +55,7 @@ void send_payload()
         println("Empty ack this time!");
     }
     else {
-        print("Data ready, reading: ");
+        println("Data ready, reading...");
 
         uint8_t status = spi_transfer((uint8_t) 0xFF);
         print("Status ");

@@ -26,9 +26,8 @@ void receiver_loop()
 
         println("Setting auto ack.");
         // Set autoack payload for data pipe 0
-        uint8_t buf[6];
-        buf[0] = 0b10101000; buf[1] = 'o'; buf[2] = 'h'; buf[3] = 'i'; buf[4] = '!';
-        spi_transfern(buf, 5);
+        uint8_t buf[4] = { 0b10101000, 0xCA, 0x11, 0xED };
+        spi_transfern(buf, 4);
 
         delay_ms(1000);
 
