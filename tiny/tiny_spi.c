@@ -3,6 +3,11 @@
 
 #include "tiny_spi.h"
 
+/**
+ * Thank you goes to https://github.com/JChristensen/tinySPI/blob/master/tinySPI.cpp
+ * for implementing SPI in C.
+ */
+
 void tiny_spi_begin(void)
 {
     USICR &= ~(_BV(USISIE) | _BV(USIOIE) | _BV(USIWM1));
@@ -12,9 +17,6 @@ void tiny_spi_begin(void)
     SPI_DDR_PORT &= ~_BV(DI_DD_PIN);    //set the DI pin as input
 
     USICR &= ~_BV(USICS0); // SPI MODE 0
-
-    //SPI_DDR_PORT |= _BV(SPI_CSN_PIN);
-    //SPI_PORT |= _BV(SPI_CSN_PIN);
 }
 
 uint8_t tiny_spi_crank(uint8_t spiData)
@@ -29,16 +31,14 @@ uint8_t tiny_spi_crank(uint8_t spiData)
 
 void before_transfer()
 {
-    //SPI_PORT &= ~_BV(SPI_CSN_PIN);
     SPI_PORT &= ~_BV(USCK_DD_PIN);  // SCK low will pull CSN low as well
     _delay_us(16);  // allow CSN to settle
 }
 
 void after_transfer()
 {
-    //SPI_PORT |= _BV(SPI_CSN_PIN);
     SPI_PORT |= _BV(USCK_DD_PIN);  // SCK high will pull CSN high as well
-    _delay_us(128);  // allow csn to settle
+    _delay_us(128);  // allow CSN to settle
 }
 
 void tiny_spi_transfern(uint8_t *buf, uint8_t n)

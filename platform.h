@@ -3,6 +3,10 @@
 
 #include <stdint.h>
 
+/**
+ * Contains function definitions which implementations are platform specific.
+ */
+
 void print(char *str);
 void println(char *str);
 void print_buf(uint8_t *buf, uint8_t n);

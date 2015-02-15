@@ -3,6 +3,10 @@
 
 #include <avr/io.h>
 
+/**
+ * This overrides definitions in hardware.h of the tinytemplate library.
+ */
+
 #define UART_ENABLED
 #define BAUD_RATE 57600
 

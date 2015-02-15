@@ -54,4 +54,5 @@ void spi_transfern(uint8_t *buf, uint8_t n)
 
 void ce_high()
 {
+    // CE is conntected to VCC.
 }

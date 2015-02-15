@@ -42,7 +42,7 @@ endif
 cflags+=-include definitions.h
 
 # https://github.com/thegaragelab/tinytemplate library
-tinytpl=../tinytemplate
+tinytpl=tinytemplate
 cflags+=-I $(tinytpl)/firmware/include
 srcs+= \
 	$(tinytpl)/firmware/shared/uart_send.c \

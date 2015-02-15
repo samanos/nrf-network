@@ -1,6 +1,17 @@
 #include "platform.h"
 #include "common.h"
 
+void prx()
+{
+    // read CONFIG register
+    uint8_t buf[2] = { 0, 0 };
+    spi_transfern(buf, 2);
+
+    buf[0] = 0b00100000; // write to CONFIG
+    buf[1] |= 1 << 0; // PRX
+    spi_transfern(buf, 2);
+}
+
 void clean_rx_dr_int()
 {
     uint8_t status = spi_transfer(0xFF);

@@ -3,21 +3,59 @@
 
 #include <stdint.h>
 
+/**
+ * Configure NRF24 registers that are common for prx and ptr.
+ */
 void common_config();
-void ptx();
-void prx();
+
+/**
+ * Set prx listen address.
+ */
 void prx_addr();
+
+/**
+ * Set receiver address and listen address for acks.
+ */
 void receiver_addr();
 
+/**
+ * Go to POWER UP state.
+ */
 void power_up();
+
+/**
+ * Got to POWER DOWN state.
+ */
 void power_down();
 
+/**
+ * Check if data is ready in the RX FIFO by querying which data pipe has data available.
+ */
 uint8_t rx_data_ready();
-uint8_t get_rx_data();
 
+/**
+ * Clock in received data from RX FIFO.
+ */
+uint8_t get_rx_data(uint8_t *rx_data);
+
+/**
+ * Flush TX FIFO. In prx this holds ACK payloads.
+ */
 void flush_tx();
+
+/**
+ * Flush RX FIFO.
+ */
 void flush_rx();
+
+/**
+ * Clear interrupt flags.
+ */
 void clean_int_flags();
+
+/**
+ * Flush TX and RX FIFOs and clear interrupt flags.
+ */
 void clean_up();
 
 #endif

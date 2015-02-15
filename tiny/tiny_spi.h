@@ -6,10 +6,8 @@
 #define SPI_PORT PORTB
 #define SPI_DDR_PORT DDRB
 #define USCK_DD_PIN DDB2
-#define DO_DD_PIN DDB1
-#define DI_DD_PIN DDB0
-
-#define SPI_CSN_PIN DDB3
+#define DO_DD_PIN DDB1 // DO is MISO on ATtiny85
+#define DI_DD_PIN DDB0 // DI is MOSI on ATtiny85
 
 void tiny_spi_begin();
 uint8_t tiny_spi_transfer(uint8_t spiData);
