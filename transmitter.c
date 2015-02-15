@@ -1,44 +1,39 @@
-#include <bcm2835.h>
-#include <stdio.h>
-
+#include "platform.h"
 #include "common.h"
 
 void tx_payload()
 {
     // W_TX_PAYLOAD command
-    char buf[11] = { 0b10100000, 'h', 'e', 'l', 'l', 'o', 'w', 'o', 'r', 'l', 'd' };
-    bcm2835_spi_transfern(buf, 11);
+    uint8_t buf[11] = { 0b10100000, 'h', 'e', 'l', 'l', 'o', 'w', 'o', 'r', 'l', 'd' };
+    spi_transfern(buf, 11);
 }
 
 uint8_t max_retransmits_reached()
 {
-    uint8_t status = bcm2835_spi_transfer((uint8_t) 0xFF);
+    uint8_t status = spi_transfer((uint8_t) 0xFF);
     // MAX_RT is bit 4 in status register
     return (status >> 4) & 1;
 }
 
 uint8_t tx_data_sent()
 {
-    uint8_t status = bcm2835_spi_transfer((uint8_t) 0xFF);
+    uint8_t status = spi_transfer((uint8_t) 0xFF);
     // TX_DS is bit 5 in status register
     return (status >> 5) & 1;
 }
 
 void clean_max_rt_int()
 {
-    uint8_t status = bcm2835_spi_transfer((uint8_t) 0xFF);
+    uint8_t status = spi_transfer((uint8_t) 0xFF);
     status |= 1 << 4;
 
     // write to STATUS register
     char buf[2] = { 0b00100111, status };
-    bcm2835_spi_transfern(buf, 2);
+    spi_transfern(buf, 2);
 }
 
-int main(int argc, char **argv)
+void send_payload()
 {
-    if (!bcm2835_init())
-        return 1;
-
     enable_spi();
     common_config();
     ptx();
@@ -54,30 +49,24 @@ int main(int argc, char **argv)
     while (!tx_data_sent() && !max_retransmits_reached()) {}
 
     if (max_retransmits_reached()) {
-        printf("Unable to send data.\n");
+        println("Unable to send data.");
     }
     else if (!rx_data_ready()) {
-        printf("Empty ack this time!\n");
+        println("Empty ack this time!");
     }
     else {
-        printf("Data ready, reading...");
+        print("Data ready, reading: ");
 
-        uint8_t status = bcm2835_spi_transfer((uint8_t) 0xFF);
-        printf("Status %02X\n", status);
+        uint8_t status = spi_transfer((uint8_t) 0xFF);
+        print("Status ");
+        print_buf(&status, 1);
 
         char buf[32];
         uint8_t length = get_rx_data(buf);
-
-        int i;
-        for (i = 1; i <= length; i++) {
-            printf("%c", buf[i]);
-        }
-        printf("\n");
+        print_buf(buf, length + 1);
     }
 
     clean_up();
     power_down();
     disable_spi();
-
-    return 0;
 }
