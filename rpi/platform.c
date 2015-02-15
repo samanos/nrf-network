@@ -53,7 +53,7 @@ uint8_t spi_transfer(uint8_t data)
 
 void spi_transfern(uint8_t *buf, uint8_t n)
 {
-    bcm2835_spi_transfern(buf, n);
+    bcm2835_spi_transfern((char *)buf, n);
 }
 
 void ce_high()

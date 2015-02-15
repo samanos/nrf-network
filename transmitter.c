@@ -28,7 +28,7 @@ void clean_max_rt_int()
     status |= 1 << 4;
 
     // write to STATUS register
-    char buf[2] = { 0b00100111, status };
+    uint8_t buf[2] = { 0b00100111, status };
     spi_transfern(buf, 2);
 }
 
@@ -61,7 +61,7 @@ void send_payload()
         print("Status ");
         print_buf(&status, 1);
 
-        char buf[32];
+        uint8_t buf[32];
         uint8_t length = get_rx_data(buf);
         print_buf(buf, length + 1);
     }

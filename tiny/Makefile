@@ -35,7 +35,7 @@ lsts=$(subst .c,.lst,$(srcs))
 ifeq ($(name), prx)
 	srcs+=prx.c ../receiver.c
 else
-	srcs+=prt.c
+	srcs+=ptx.c ../transmitter.c
 endif
 
 # definitions that override defines in various libraries
