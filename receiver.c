@@ -1,7 +1,10 @@
 #include "platform.h"
 #include "common.h"
 
-void prx()
+/**
+ * Configure prx specific registers.
+ */
+static void prx()
 {
     // read CONFIG register
     uint8_t buf[2] = { 0, 0 };
@@ -12,7 +15,10 @@ void prx()
     spi_transfern(buf, 2);
 }
 
-void clean_rx_dr_int()
+/**
+ * Clean RX Data Ready interrupt flag.
+ */
+static void clean_rx_dr_int()
 {
     uint8_t status = spi_transfer(0xFF);
     status |= 1 << 6;
@@ -22,12 +28,12 @@ void clean_rx_dr_int()
     spi_transfern(buf, 2);
 }
 
-void receiver_loop()
+void receiver_loop(uint8_t *addr, uint8_t addr_len)
 {
     enable_spi();
     common_config();
     prx();
-    prx_addr();
+    prx_addr(addr, addr_len);
 
     ce_high();
     power_up();
@@ -45,8 +51,9 @@ void receiver_loop()
         while (rx_data_ready()) {
             print("Data ready, reading: ");
             uint8_t buf[32];
-            uint8_t length = get_rx_data(buf);
-            print_buf(buf, length + 1);
+            int8_t length = get_rx_data(buf);
+            if (length > 0)
+              print_buf(buf, length);
 
             clean_rx_dr_int();
         }

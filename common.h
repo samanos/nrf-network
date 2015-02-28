@@ -11,12 +11,12 @@ void common_config();
 /**
  * Set prx listen address.
  */
-void prx_addr();
+void prx_addr(uint8_t *addr, uint8_t addr_len);
 
 /**
  * Set receiver address and listen address for acks.
  */
-void receiver_addr();
+void receiver_addr(uint8_t *addr, uint8_t addr_len);
 
 /**
  * Go to POWER UP state.
@@ -36,7 +36,7 @@ uint8_t rx_data_ready();
 /**
  * Clock in received data from RX FIFO.
  */
-uint8_t get_rx_data(uint8_t *rx_data);
+int8_t get_rx_data(uint8_t *rx_data);
 
 /**
  * Flush TX FIFO. In prx this holds ACK payloads.

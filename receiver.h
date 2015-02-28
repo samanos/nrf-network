@@ -1,19 +1,11 @@
 #ifndef RECEIVER_H
 #define RECEIVER_H
 
-/**
- * Configure prx specific registers.
- */
-void prx();
-
-/**
- * Clean RX Data Ready interrupt flag.
- */
-void clean_rx_dr_int();
+#include <stdint.h>
 
 /**
  * A loop where receiver puts ACK payloads and handles received messages.
  */
-void receiver_loop() __attribute__ ((noreturn));
+void receiver_loop(uint8_t *addr, uint8_t addr_len) __attribute__ ((noreturn));
 
 #endif

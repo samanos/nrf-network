@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "platform.h"
 
 void common_config()
@@ -33,23 +35,29 @@ void common_config()
     spi_transfern(buf, 2);
 }
 
-void prx_addr()
+void prx_addr(uint8_t *addr, uint8_t addr_len)
 {
     // RX_ADDR_P0
     // receive address of data pipe 0
-    uint8_t buf[6] = { 0b00101010, 't', 'e', 'm', 'p', '1' };
+    uint8_t buf[6] = { 0b00101010, 0xAF, 0xDE, 0xAD, 0xBE, 0xEF };
+    for (uint8_t i = 0; i < 5 && i < addr_len; i++) {
+      buf[i + 1] = addr[i];
+    }
     spi_transfern(buf, 6);
 }
 
-void receiver_addr()
+void receiver_addr(uint8_t *addr, uint8_t addr_len)
 {
     // TX_ADDR
     // receiver address
-    uint8_t buf[6] = { 0b00110000, 't', 'e', 'm', 'p', '1' };
+    uint8_t buf[6] = { 0b00110000, 0xAF, 0xDE, 0xAD, 0xBE, 0xEF };
+    for (uint8_t i = 0; i < 5 && i < addr_len; i++) {
+      buf[i + 1] = addr[i];
+    }
     spi_transfern(buf, 6);
 
     // need to set receive address for data pipe 0 for acks
-    prx_addr();
+    prx_addr(addr, addr_len);
 }
 
 void power_up()
@@ -81,17 +89,27 @@ uint8_t rx_data_ready()
     return ((status >> 1) & 0b00000111) != 0b00000111;
 }
 
-uint8_t get_rx_data(uint8_t *rx_data)
+int8_t get_rx_data(uint8_t *rx_data)
 {
     // R_RX_PL_WID command
-    uint8_t buf[32] = { 0b01100000, 0 };
+    uint8_t buf[33] = { 0b01100000, 0 };
     spi_transfern(buf, 2);
 
-    uint8_t length = buf[1];
+    int8_t length = buf[1];
+    if (length <= 32) {
+      memset(buf, 0, sizeof(buf));
+      // R_RX_PAYLOAD command
+      buf[0] = 0b01100001;
+      spi_transfern(buf, length + 1); // one for status byte
 
-    // R_RX_PAYLOAD command
-    rx_data[0] = 0b01100001;
-    spi_transfern(rx_data, length + 1); // one for status byte
+      // at the first position of buf is a status byte
+      for (uint8_t i = 0; i < length; i++) {
+        rx_data[i] = buf[i + 1];
+      }
+    }
+    else {
+      length = -1;
+    }
 
     return length;
 }

@@ -2,5 +2,6 @@
 
 int main(int argc, char **argv)
 {
-    receiver_loop();
+    uint8_t addr = 0xA1;
+    receiver_loop(&addr, 1);
 }

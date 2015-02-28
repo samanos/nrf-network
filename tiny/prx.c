@@ -6,5 +6,6 @@ void main() __attribute__ ((noreturn));
 
 void main() {
     uartInit();
-    receiver_loop();
+    uint8_t addr = 0xA1;
+    receiver_loop(&addr, 1);
 }

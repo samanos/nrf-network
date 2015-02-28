@@ -1,7 +1,10 @@
 #include "platform.h"
 #include "common.h"
 
-void ptx()
+/**
+ * Configure ptx specific registers.
+ */
+static void ptx()
 {
     // read CONFIG register
     uint8_t buf[2] = { 0, 0 };
@@ -12,38 +15,41 @@ void ptx()
     spi_transfern(buf, 2);
 }
 
-void tx_payload()
+/**
+ * Transmit payload.
+ */
+static void tx_payload(uint8_t *payload, uint8_t payload_len)
 {
     // W_TX_PAYLOAD command
-    uint8_t buf[9] = { 0b10100000, 0xF0, 0x1D, 0xAB, 0x1E, 0x5C, 0xA1, 0xAB, 0x1E };
-    spi_transfern(buf, 9);
+    uint8_t buf[9] = { 0b10100000, 0, 0, 0, 0, 0, 0, 0, 0 };
+    uint8_t i;
+    for (i = 0; i < 8 && i < payload_len; i++) {
+      buf[i + 1] = payload[i];
+    }
+    spi_transfern(buf, i + 1);
 }
 
-uint8_t max_retransmits_reached()
+/**
+ * Check if max retransmits has been reached.
+ */
+static uint8_t max_retransmits_reached()
 {
     uint8_t status = spi_transfer((uint8_t) 0xFF);
     // MAX_RT is bit 4 in status register
     return (status >> 4) & 1;
 }
 
-uint8_t tx_data_sent()
+/**
+* Check if data has been sent, which means that ACK has been received with or without payload.
+*/
+static uint8_t tx_data_sent()
 {
     uint8_t status = spi_transfer((uint8_t) 0xFF);
     // TX_DS is bit 5 in status register
     return (status >> 5) & 1;
 }
 
-void clean_max_rt_int()
-{
-    uint8_t status = spi_transfer((uint8_t) 0xFF);
-    status |= 1 << 4;
-
-    // write to STATUS register
-    uint8_t buf[2] = { 0b00100111, status };
-    spi_transfern(buf, 2);
-}
-
-void send_payload()
+int8_t send_payload(uint8_t *addr, uint8_t addr_len, uint8_t *payload, uint8_t payload_len, uint8_t *reply)
 {
     enable_spi();
     common_config();
@@ -54,11 +60,12 @@ void send_payload()
 
     clean_up();
 
-    receiver_addr();
+    receiver_addr(addr, addr_len);
 
-    tx_payload();
+    tx_payload(payload, payload_len);
     while (!tx_data_sent() && !max_retransmits_reached()) {}
 
+    int8_t length = -1;
     if (max_retransmits_reached()) {
         println("Unable to send data.");
     }
@@ -72,12 +79,12 @@ void send_payload()
         print("Status ");
         print_buf(&status, 1);
 
-        uint8_t buf[32];
-        uint8_t length = get_rx_data(buf);
-        print_buf(buf, length + 1);
+        length = get_rx_data(reply);
     }
 
     clean_up();
     power_down();
     disable_spi();
+
+    return length;
 }
