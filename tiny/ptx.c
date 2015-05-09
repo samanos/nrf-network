@@ -7,6 +7,7 @@ void main() __attribute__ ((noreturn));
 
 void main() {
     uartInit();
+    enable_transmitter();
 
     while (1) {
         uint8_t addr = 0xA1;

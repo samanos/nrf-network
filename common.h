@@ -58,4 +58,9 @@ void clean_int_flags();
  */
 void clean_up();
 
+/**
+ * Stop activities and free up hardware.
+ */
+void shutdown();
+
 #endif

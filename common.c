@@ -140,3 +140,9 @@ void clean_up()
     flush_rx();
     clean_int_flags();
 }
+
+void shutdown()
+{
+    power_down();
+    disable_spi();
+}

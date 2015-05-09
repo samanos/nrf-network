@@ -28,7 +28,7 @@ static void clean_rx_dr_int()
     spi_transfern(buf, 2);
 }
 
-void receiver_loop(uint8_t *addr, uint8_t addr_len)
+void enable_receiver(uint8_t *addr, uint8_t addr_len)
 {
     enable_spi();
     common_config();
@@ -37,7 +37,10 @@ void receiver_loop(uint8_t *addr, uint8_t addr_len)
 
     ce_high();
     power_up();
+}
 
+void receiver_loop()
+{
     while(1) {
         clean_up();
 

@@ -49,7 +49,7 @@ static uint8_t tx_data_sent()
     return (status >> 5) & 1;
 }
 
-int8_t send_payload(uint8_t *addr, uint8_t addr_len, uint8_t *payload, uint8_t payload_len, uint8_t *reply)
+void enable_transmitter()
 {
     enable_spi();
     common_config();
@@ -59,9 +59,11 @@ int8_t send_payload(uint8_t *addr, uint8_t addr_len, uint8_t *payload, uint8_t p
     power_up();
 
     clean_up();
+}
 
+int8_t send_payload(uint8_t *addr, uint8_t addr_len, uint8_t *payload, uint8_t payload_len, uint8_t *reply)
+{
     receiver_addr(addr, addr_len);
-
     tx_payload(payload, payload_len);
     while (!tx_data_sent() && !max_retransmits_reached()) {}
 
@@ -83,8 +85,5 @@ int8_t send_payload(uint8_t *addr, uint8_t addr_len, uint8_t *payload, uint8_t p
     }
 
     clean_up();
-    power_down();
-    disable_spi();
-
     return length;
 }
